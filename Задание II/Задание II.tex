@@ -1,0 +1,568 @@
+\documentclass{book}
+
+\usepackage[utf8x]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{bbold}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{wrapfig}
+
+\usetikzlibrary{positioning,shapes,decorations.markings}
+
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries\centering}
+{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+\titleformat{\section}
+{\normalfont\Large\bfseries\centering}
+{\thesection}{1em}{}
+
+\def\thesection{\S~\arabic{section}.}
+\def\theequation{\arabic{section}.\arabic{equation}}
+
+\titleformat{\subsection}[runin]{\normalfont\bfseries}{\thesubsection.}{3pt}{}
+\def\thesubsection{\arabic{subsection}}
+
+\fancypagestyle{plain}{
+\fancyhead{}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}}
+
+\pagestyle{fancy}
+
+\fancyhead{}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+
+\newcommand{\idest}{т.~е.\ }
+\newcommand{\theorem}[1]{Т~е~о~р~е~м~а~~#1.\ }
+\newcommand{\nec}{Н~е~о~б~х~о~д~и~м~о~с~т~ь.\ }
+\newcommand{\suff}{Д~о~с~т~а~т~о~ч~н~о~c~т~ь.\ }
+\newcommand{\proof}{Д~о~к~а~з~а~т~е~л~ь~с~т~в~о.\ }
+\newcommand{\cons}[1]{С~л~е~д~с~т~в~и~е~~#1.\ }
+\newcommand{\lemma}[1]{Л~е~м~м~а~~#1.\ }
+
+\begin{document}
+
+\chapter{Натуральные сплайны и сплайновые алгоритмы}
+
+%\setcounter{page}{6}
+
+\section{Общая задача о натуральный сплайнах}
+\setcounter{equation}{0}
+
+В настоящее время распространяется такой подход к сплайнам, при котором сплайнами называются решения вариационных задач специального вида. общая теория таких задач разработана французскими математиками М. Аттиа, Ф. М. Анселоном, П.-Ж. Лораном в 1965-1965 гг. и изложена в монографиях  П.-Ж. Лорана [20] и В. А. Василенко [3]. Рассмотрим элементы этой теории и укажем приложения к теории оптимальных алгоритмов.
+
+\subsection{Теорема характеризации.} Даны линейное пространство $\varkappa$ и вещественное гильбертово пространство $H$. Пространстве $\varkappa$ определены операция слоажения элементов (векторов) и операция умножения элементов на вещественные числа. В пространстве $H$ кроме этого определены скалярное произведение элементов $<h_1, h_2>$ и норма $\| h \|=\sqrt{<h,h>}$. Пусть даны динейный оператор $T:\varkappa\rightarrow H$ и линейные функционалы $L_i, i\in1:m$, заданные на $\varkappa$. Рассмотрим задачу минимизации
+
+\begin{equation}
+\|Tf\|^2=\min_{L_i(f)=z_i, i\in1:m},
+\label{1}
+\end{equation}
+
+\noindent где $z_i$ -- фиксированные числа и минимум берется по всем элементам $f\in\varkappa$, таким, что $L_i(f)=z_i, i\in1:m$. Решение $\sigma$ задачи (\ref{1}), если оно существует, называется натуральным сплайном или просто сплайном. Термин <<натуральный>> используется для того, чтобы подчеркнуть, что $\sigma$ является решением задачи (\ref{1}). Все сплайны, рассматриваемые в дальнейшем, являются натуральнами, \idest являются решениями некоторых задач вида (\ref{1}).\newline
+Введем $m$-мерный вектор $If=(L_1(f), L_2(f),\dots,L_m(f))$. Он задает информацию об элементе $f$. Пусть множество
+
+\begin{equation*}
+M=\{f\in\varkappa:L_i(f)=z_i, i\in 1:m\}
+\end{equation*}
+
+\noindentнепусто. Рассмотрим в $\varkappa$ подпространство
+
+\begin{equation*}
+N(I)=\{h\in\varkappa:Ih=\mathbb{0}\}.
+\end{equation*}
+
+\noindent Равенство $Ih=0$ означает, что $L_i(h)=0$ для всех $i\in 1:m$.\\
+Возьмем фиксированный элемент $f_0\in M$. Тогда
+
+\begin{equation*}
+M=\{f=f_0+h|h\in N(I)\}
+\end{equation*}
+
+\noindent и задача (\ref{1}) переписывается в виде
+
+\begin{equation}
+\|Tf_0+Th\|^2\rightarrow\min_{h\in N(I)}
+\label{2}
+\end{equation}
+
+\noindent Задачу (\ref{2}) можно рассматривать как задачу нахождения расстояния от элемента $Tf_0$ до $TN(I)$ -- образа N(I) при отображении $T$. $TN(I)$ является линейным множеством в $H$. Если это множество замкнуто в $H$, то хорошо известно [32, с. 60], что решение задачи (\ref{2}) существует.
+\parУстановим теорему характеризации решения задачи (\ref{1}). 
+\par\theorem{1.1} \textit{Пусть $\sigma\in M$. Для того чтобы элемент $\sigma$ был решением задачи \textup{(\ref{1})}, необходимо и достаточно выполнение условия ортогональности}
+
+\begin{equation}
+<T\sigma,Th>=0 \hspace{5mm} \forall h \in N(I).
+\label{3}
+\end{equation}
+
+\proof\nec  Пусть $\sigma$ --  решение, $h\in N(I)$. Очевидно, $\sigma+\alpha h\in M$ для любого $\alpha$, поэтому функция $\varphi(\alpha)=\|T\sigma+\alpha Th\|^2$ достигает минимума при $\alpha=0$. Отсюда
+
+\begin{equation*}
+\varphi'(0)=2<T\sigma,Th>=0.
+\end{equation*}
+
+\suff Возьмем произвольный элемент $f\in M$. Его можно представить в виде $f=\sigma+h$, где $h\in N(I)$. В силу (\ref{3})
+
+\begin{equation*}
+\|Tf\|^2=\|T\sigma+Th\|^2=\|T\sigma\|^2+\|Th\|^2\geq\|T\sigma\|^2
+\end{equation*}
+
+\noindent Отсюда следует, что $\sigma$ является решением задачи (\ref{1}). Теорема доказана.
+\parПоложим $N(T)=\{h\in\varkappa:Th=\mathbb{0}\}$.
+\par\cons{1.1} \textit{Если}
+
+\begin{equation*}
+N(T)\cap N(I)=\{\mathbb{0}\},
+\end{equation*}
+
+\textit{то решение задачи \textup{(\ref{1})} единственно.}
+\par\proof Пусть есть два решения, $\sigma_1$ и $\sigma_2$. Тогда $L_i(\sigma_1)=L_i(\sigma_2)=z_i, i \in 1:m$, и $h:=\sigma_1-\sigma_2\in N(I)$. В силу необходимого условия оптимальности (\ref{3})
+
+ \begin{equation*}
+<T\sigma_1,Th>=0,\hspace{5mm}<T\sigma_2,Th>=0.
+\end{equation*}
+
+Вычитая из первого равенства второе, получаем $<Th,Th>=0$, откуда $H\in N(T)$. По условию $h=\mathbb{0}$, и единственность доказана. Утверждения о характеризации и единственности сплайна будут в дальнейшем неоднократно использоваться. В качестве первого применеия покажем, что каждый сплайн является линейной комбинацией вундаментальных сплайнов $\sigma_1, \dots, \sigma_m$. Сплайн $\sigma_k$ определяется как решение задачи
+
+\begin{equation*}
+\|Tf\|^2=\min_{L_i(f)=\delta_{ik}, i\in1:m},
+\end{equation*}
+
+\noindent где $\delta_{ik}$ = 0 при $i\neq k$ и $\delta_{kk}=1$. По теореме 1.1,
+
+\begin{equation*}
+<T\sigma_k, Th>=0 \hspace{5mm} \forall h \in N(I).
+\end{equation*}
+
+Элемент
+
+\begin{equation*}
+\sigma=\sum_{k=1}^m z_k \sigma_k
+\end{equation*}
+
+\noindent удовлетворяет условию ортогональности (\ref{3}) и ограничениям
+
+\begin{equation*}
+L_i(\sigma)=\sum_{k=1}^m z_k \delta_{ik}, i\in 1:m.
+\end{equation*}
+
+\noindent Поэтому $\sigma$ является решением задачи (\ref{1}).
+
+\subsection{Сплайны в выпуклом множестве} Предположим, что $\varkappa$ -- вещественное гильбертово пространство со скалярным произведением $(x_1, x_2)$, а $T$ -- линейный непрерывный оператор из $\varkappa$ в гильбертово пространство $H$. Зафиксируем $y\in H$. Тогда $<Tx, y>$ есть линейный непрерывный функционал от $x$. По теореме Рисса, существует елинственный элемент $w\in\varkappa$, такой, что
+
+\begin{equation*}
+<Tx, y>=<x, w> \forall x\in\varkappa.
+\end{equation*}
+
+\noindent Элемент $w$ есть функция от $y:w=T^\ast y$ . Оператор $T^\ast:H\rightarrow\varkappa$ линеен, непрерывен и называется сопряженным к $T$.
+\par Рассмотрим задачу
+
+\begin{equation}
+\Phi(x):=\frac{1}{2}\|Tx\|^2\rightarrow\min_{x\in\Omega}
+\label{4}
+\end{equation}
+
+\noindent где $\Omega$ -- выпуклое множество в $\varkappa$.
+\par\theorem{1.2} \textit{Для того, чтобы элемент $\sigma\in\Omega$ был решением задачи\textup{(\ref{4})}, необходимо и достаточно, чтобы выполнялось условие}
+
+\begin{equation}
+(T^\ast T\sigma, \sigma)=\min_{x\in\Omega}{(T^\ast T\sigma, x)}.
+\label{5}
+\end{equation}
+
+\par\proof Имеем:
+
+\begin{equation*}
+\Phi(x+h)=\Phi(x)+(T^\ast T\sigma, h)+\frac{1}{2}(T^\ast Th, h).
+\end{equation*}
+
+\noindent Пусть $\sigma\in\Omega$ -- решение (\ref{4}), $v=T^\ast T\sigma, x\in\Omega$ --произвольный элемент, $h=x-\sigma$. Тогда
+
+\begin{equation*}
+\Phi(\sigma+th)=\Phi(\sigma)+t(v, h)+\frac{t^2}{2}(T^*Th, h)\geq\Phi(\sigma)\  \forall t\in[0, 1].
+\end{equation*}
+
+Отсюда $(v, h)\geq0, (v, x)\geq(v, \sigma)$,\idest выполнено (\ref{5}). Если выполнено (\ref{5}), то, рассуждая в обратном порядке, получим, что $\sigma$ -- решение (\ref{4}). Теорема доказана.
+\par Для дальнейшего потребуются некоторые сведения о выпуклых конусах $\varkappa$. Множество $\Gamma\subset\varkappa$ называется конусом, если вместе с вектором $x$ оно содержит векторы $\lambda x, \lambda\geq0$ . Введем понятие сопряженного конуса:
+
+\begin{equation*}
+\Gamma^+=\{w\in\varkappa|(w, x)\geq0\  \forall x\in\Gamma\}.
+\end{equation*}
+
+\par\lemma{1.1} \textit{Если $\Gamma$ -- замкнутый выпуклый конус в гильбертовом пространсте $\varkappa$, то}
+
+\begin{equation}
+\Gamma^{++}=\Gamma.
+\label{6}
+\end{equation}
+
+\parДоказательство проводится так же как и в [13, с. 309-314].
+\par Рассмотрим конус $\Gamma$ , заданный конечной системой линейных неравенств,
+
+\begin{equation*}
+\Gamma=\{h\in\varkappa|(l_i, h)\geq0, i\in1:m\},
+\end{equation*}
+
+\noindent где $l_i\in\varkappa$.
+\lemma{1.2~~(т~е~о~р~е~м~а~~Ф~а~р~к~а~ш~а)} \textit{Сопряженный конус имеет вид}
+
+\begin{equation}
+\Gamma^{+}=\left\{w|w=\sum_{i=1}^m\lambda_il_i, \lambda_i\geq0, i\in1:m\right\}.
+\label{7}
+\end{equation}
+
+\par \proof Обозначим $W$ множество в правой части (\ref{7}). Нетрудно показать, что
+
+\begin{equation}
+W^+=\Gamma.
+\label{8}
+\end{equation}
+
+\noindent Множество $W$ является замкнутым выпуклым конусом (доказательство проводится по той же схеме, что и в [13, с. 318-319]). По лемме 1.1, $W^{++}=W$. Из (\ref{8}) получаем $\Gamma^+=W^{++}=W$. Лемма доказана.
+\par Рассмотрим теперь задачу (\ref{4}) в случае, когда $\Omega$ задано конечным числом линейных неравенств:
+
+\begin{equation*}
+\Omega=\{x\in\varkappa|(l_i,x)\geq b_i,i\in1:m\}.
+\end{equation*}
+
+\par\theorem{1.3} \textit{Пусть $\sigma\in\Omega$. Для того, чтобы элемент $\sigma$ минимизировал функционал $\|Tx\|^2$ в $\Omega$ , необходимо и достаточно, чтобы нашлись числа $\lambda_i\geq0$, такие, что}
+
+\begin{equation}
+T^*T\sigma=\sum_{i=1}^m\lambda_il_i,
+\label{9}
+\end{equation}
+
+\begin{equation}
+\lambda_i[(l_i, \sigma)-b_i]=0, i\in1:m
+\label{10}
+\end{equation}
+
+\par\proof\suff Пусть выполнено (\ref{9})--(\ref{10}). Для произвольных $x\in\Omega, v=T^*T\sigma$ имеем:
+
+\begin{equation*}
+(v, x-\sigma)=\sum_{i=1}^m\lambda_i(l_i, x-\sigma)=\sum_{i=1}^m\lambda_i[(l_i,x)-b_i+b_i-(l_i, \sigma)]=\sum_{i=1}^m\lambda_i[(l_i,x)-b_i]\geq0.
+\end{equation*}
+
+\noindent Значит, выполнено (\ref{5}) и $\sigma$ -- точка минимума.
+\par\nec Пусть $\sigma$ -- сплайн в $\Omega$. Тогда, по теореме 1.2, $\sigma$ является решением задачи
+
+\begin{equation*}
+(v, x)\rightarrow\min_{x\in\Omega}.
+\end{equation*}
+
+\noindent Рассмотрим множества
+
+\begin{equation*}
+R(\sigma)=\{i\in1:m|(l_i, \sigma)=b_i\},\hspace{5mm}\Gamma(\sigma)=\{h\in\varkappa|(l_i, h)\geq0, i\in R(\sigma)\}.
+\end{equation*}
+
+\noindent Для любого $h\in\Gamma(\sigma)$ вектор $\sigma+th\in\Omega$ при малых $t>0$. Отсюда $(v, \sigma+th)\geq(v, \sigma)$, \idest $(v, h)\geq0$ для любого $h\in\Gamma(\sigma)$. Значит, $v\in\Gamma^+(\sigma)$. По лемме 1.2,
+
+\begin{equation*}
+v=\sum_{i\in R(\sigma)}\lambda_il_i\ \lambda_i\geq0\ i\in R(\sigma).
+\end{equation*}
+
+\noindent Положим $\lambda_i=0$ для $i\not\in R(\sigma)$. Тогда выполнено (\ref{9}), (\ref{10}). Теорема доказана.
+\par В качестве следствия получим теорему характеризации в терминах множителей Лагранжа $\lambda_i$ для задачи (1.1). Пусть $L_i$ -- линейные непрерывные функционалы на $\varkappa$. По теореме Рисса, $L_i(x)=(l_i, x)$, где $l_i$ -- некоторый элемент из $\varkappa$.
+\par\cons{1.2} \textit{Элемент $\sigma$ является решением задачи}
+
+\begin{equation}
+\frac{1}{2}\|Tx\|^2\rightarrow\min_{(l_i, x)=z_i, i\in1:m}
+\label{11}
+\end{equation}
+
+\noindent\textit{тогда и только тогда, когда найдутся $\lambda_i\in(-\infty, \infty)$, такие, что}
+
+\begin{equation}
+T^*T\sigma=\sum_{i=1}^m\lambda_il_i.
+\label{12}
+\end{equation}
+
+\par\proof Множество планов в задаче (\ref{11}) можно записать в виде
+
+\begin{equation*}
+\Omega=\{x\in\varkappa|(l_i, x)\geq z_i, (-l_i, x)\geq-z_i, i\in1:m\}.
+\end{equation*}
+
+\noindent По теореме 1.3, $\sigma$ является решением тогда и только тогда , когда при некоторых $\lambda_i'\geq0, \lambda_i''\geq0$ выполняется равенство
+
+\begin{equation*}
+T^*T\sigma=\sum_{i=1}^m(\lambda_i'l_i-\lambda_i''l_i).
+\end{equation*}
+
+\noindent Полагая  $\lambda_i=\lambda_i'-\lambda_i''$ получим (\ref{12}). Следствие доказано.
+\par Окончание параграфа посвятим подробному рассмотрению задачи с двухсторонними ограниченями:
+
+\begin{equation}
+\frac{1}{2}\|Tx\|^2\rightarrow\min^{x\in\Omega}.
+\label{13}
+\end{equation}
+
+\noindent где
+
+\begin{equation}
+\Omega=\{x\in\varkappa|(l_i, x)=b_i, i\in1:m; \alpha_i\leq(L-I, x)\leq\beta_i, i\in m+1:N\}.
+\label{14}
+\end{equation}
+
+\noindent Предпологается, что $\alpha_i<\beta_i$, но не исключается случай, когда некоторые $\alpha_i=-\infty$ или некоторые $\beta_i=+\infty$. Фактически это общая задача с конечным числом линейных ограничений, только ограничения-равенства выделены. Из теоремы 1.3 легко получить следующее утверждение.
+\par\theorem{1.4} \textit{Для того, чтобы $\sigma$ был сплайном в $\Omega$, необходимо и достаточно, чтобы нашлись числа $\lambda_i,i\in1:N$ такие, что}
+
+\begin{equation*}
+T^*T\sigma=\sum_{i=1}^N\lambda_il_i.
+\end{equation*}
+
+\noindent \textit{причем для $\lambda_{m+1}, \dots, \lambda_N$ выполнены следующие знаковые правила:}
+
+\begin{equation*}
+\lambda_i\geq0, \text{\textit{если }} (l_i, \sigma)=\alpha_i,
+\end{equation*}
+
+\begin{equation*}
+\lambda_i=0, \text{\textit{если }}\alpha_i<(l_i, \sigma)<\beta_i,
+\end{equation*}
+
+\begin{equation*}
+\lambda_i\leq0, \text{\textit{если }} (l_i, \sigma)=\beta_i,
+\end{equation*}
+
+\par Рассуждая, как в [4, с. 61], покажем, что задача (\ref{13})--(\ref{14}) сводится к конечномерной задаче квадратичного программирования. Предположим, что для любого набора чисел $z=(z_1, \dots, z_N)$ множество
+
+\begin{equation*}
+\Omega_z=\{x\in\varkappa|(l_i, x)=z_i, i\in1:N\}
+\end{equation*}
+
+\noindent не пусто. В частности, не пусто подпространство $\Omega_0$. Предположим также, что множество $T\Omega_0$ замкнуто в $H$. Тогда, как установлено в п. 1, для любого $z$ разрешима задача
+
+\begin{equation}
+\|Tx\|^2\rightarrow\min_{x\in\Omega_z}
+\label{15}
+\end{equation}
+
+\noindent Решение $\sigma=\sigma_z$ этой задачт в п. 1 было названо сплайном. обозначим $\sigma_1, \dots, \sigma_N$ фундаментальный сплайны (сплайн $\sigma_k$ удовлетворяет ограничениям $((l_i, \sigma_k)=\delta_{ik}, i\in1:N)$. тогда решение задачи (\ref{15}) запишется в виде
+
+\begin{equation}
+\sigma=\sum_{k=1}^Nz_k\sigma_k
+\label{16}
+\end{equation}
+
+\par Покажем, что решение задачи (\ref{13})--(\ref{14}) явлется некоторый $\sigma$. Подставим (\ref{16}) в (\ref{13})--(\ref{14}) вместо $x$. Получим (с учетом равенства $(l_i, \sigma)=z_i$) следующую задачу:
+
+\begin{equation*}
+F(z)=\left\|\sum_{k=1}^Nz_kT\sigma_k\right\|^2=\sum_{k, j=1}^N<T\sigma_k, T\sigma_j>z_kz_j\rightarrow\min
+\end{equation*}
+
+\noindent при ограничениях
+
+\begin{equation*}
+x_i=b_x, i\in1:m; \alpha_i\leq z_i\leq\beta_i, i\in m+1:N.
+\end{equation*}
+
+\noindent В результате имеем задачу квадратичного программирования с двусторонними ограничениями. Поскольку целевая функция $F(z)$ ограничена снизу и множество планов непусто, то [9] существует решение $z^*=(z^*_1, \dots, z^*_N)$.
+\par\theorem{1.5} \textit{Сплайн}
+
+\begin{equation*}
+\sigma^*=\sum_{k=1}^Nz^*_k\sigma_k
+\end{equation*}
+
+\noindent\textit{является решением задачи} (\ref{13})--(\ref{14}).
+\par\proof По следствию из теоремы 1.3 найдутся числа $\lambda_i\in(-\infty, \infty)$, такие, что
+
+\begin{equation}
+T^*T\sigma^*=\sum_{i=1}^N\lambda_il_i
+\label{17}
+\end{equation}
+
+\noindent Введем множества
+
+\begin{equation*}
+\begin{split}
+&M_1=\{i\in m+1:N|z^*_i=\alpha_i\},\\
+&M_2=\{i\in m+1:N|z^*_i=\beta_i\},\\
+&M_3=\{i\in m+1:N|\alpha_i<z^*_i<\beta_i\}.\\
+\end{split}
+\end{equation*}
+
+\noindent Воспользуемся теперь теоремой характеризации 1.4. По этой теореме $\sigma^*$ будет решением  (\ref{13})--(\ref{14}), если удастся установить соотношения
+
+\begin{equation}
+\lambda_i\geq0, i\in M_1; \lambda_i\leq0, i\in M_2; \lambda_i=0, i\in M_3.
+\label{18}
+\end{equation}
+
+\par Зафиксируем $i\in M_1$ и рассмотрим орт $e_i$. Вектор $z=z^*+te_i$ удовлетворяет ограничениям (\ref{14}) при малых $t>0$ (при $t<\beta_i-\alpha_i$). Поэтому
+
+\begin{equation}
+F(z^*+te_i)=\|T\sigma^*+tT\sigma_i\|^2=F(z^*)+2t(T^*T\sigma^*, \sigma_i)+t^2\|T\sigma_i\|^2.
+\label{19}
+\end{equation}
+
+\noindent В силу (\ref{17}) и определения фундаментального сплайна $\sigma_i$
+
+\begin{equation*}
+(T^*T\sigma^*, \sigma_i)=\left(\sum_{k=1}^N\lambda_kl_k, \sigma_i\right)=\lambda_i.
+\end{equation*}
+
+\noindent Отсюда и из (\ref{19}) получаем:
+
+\begin{equation}
+F(z^*)+2t\lambda_i+t^2\|T\sigma_i\|^2\geq F(z^*)
+\label{20}
+\end{equation}
+
+\noindent при малых $t>0$. Отсюда $\lambda_i\geq0$.
+\par При $i\in M_2$ неравенство (\ref{20}) выполняется для малых $t<0$, откуда $\lambda_i\leq0$. Наконец, при $i\in M_3$ неравенство (\ref{20}) выполняется для $i\in(-t_0, t_0), t_0>0$, поэтому $\lambda_i=0$. Условия (\ref{18}) установлены и теорема доказана.
+\par Теорема 1.5 является одновременно теоремой существования задачи (\ref{13})--(\ref{14}). решение существует, если для любого $z$ множество $\Omega_z$ не пусто и множество $T\Omega_0$ замкнуто в $H$. В книге Лорана [20] доказано (неконструктивно) существование решения при других условиях: множество (\ref{14}) не пусто и множество $T\varkappa$ замкнуто в $H$.
+
+\section{Задача оптимального восстановления функционала на классе элементов}
+\setcounter{equation}{0}
+
+\noindent Будем рассматривать задачи оптимального восстановления только линейных функционалов по <<линейной>> информации. Даный линейные функционалы $L, L_1, \dots, L_m$ на линейном пространстве $\varkappa$ и выпуклое цетроально-симметричное множество $W\subset\varkappa$. Напомним, что выпуклое центрально-симметричное множество $W$ вместе с элементами $f, g\in W$ содержит элементы $-f$ и $\alpha f+(1-\alpha)g$ при всех $\alpha\in[0, 1]$.
+\parТребуется восстановить $L(f)$ по информации $If=(L_1(f), \dots, L_m(f))$. Методы восстановления будут определяться функицями $m$ переменных \\\noindent $\Phi(y_1, \dots, y_m)$ (считаем, что $L(f)\approx\Phi(L_1(f), \dots, l_m(f))=\Phi(If)$). Следуя [31], функции $\Phi$ будем называть а~л~г~о~р~и~т~м~а~м~и, ибо задание $\Phi$ определяет алгоритм восстановления $L(f)$: по информации $If$ вычисляем значение $\Phi(If)$ и считаем его приближенным значением для $L(f)$.
+\par Задача состоит в нахождении алгоритма, имеющего наименьшую погрешность $R$ на классе $W$:
+
+\begin{equation*}
+R=\inf_{\Phi}\sup_{f\in W}|L(f)-\Phi(If)|.
+\end{equation*}
+%%%%%%%%%%%%%%%%%%%%%%%%Picture%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{center}
+\begin{tikzpicture}[
+    tangent/.style={
+        decoration={
+            markings,% switch on markings
+            mark=
+                at position #1
+                with
+                {
+                    \coordinate (tangent point-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}) at (0pt,0pt);
+                    \coordinate (tangent unit vector-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}) at (1,0pt);
+                    \coordinate (tangent orthogonal unit vector-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}) at (0pt,1);
+                }
+        },
+        postaction=decorate
+    },
+    use tangent/.style={
+        shift=(tangent point-#1),
+        x=(tangent unit vector-#1),
+        y=(tangent orthogonal unit vector-#1)
+    },
+    use tangent/.default=1
+]
+\draw [rotate=45, tangent = 0.157, tangent=0.657] (0,0) ellipse (2cm and 1cm);
+\draw [->] (0,-3)--(0,3);
+\draw [->] (-3,0)--(3,0);
+\draw [->,use tangent,rotate=180] (0,0)--(0,1);
+\draw [-,use tangent] (-2,0)--(2,0);
+\draw [-,use tangent=2] (-2,0)--(2,0);
+
+\node [right] at (0,3) {$y_0$};
+\node [above left] at (-0.5, 2) {$B$};
+\node [below right] at (0,1.4) {$y^*$};
+\node [above right] at (-1,-1) {$D$};
+\node [below right] at (0,-1.2) {$-y^*$};
+\node [below] at (3,0) {$y_1$};
+
+\end{tikzpicture}
+\end{center}
+\caption{Множество $D$}
+\label{img}
+\end{wrapfigure}
+%%%%%%%%%%%%%%%%%%%%%%%%Picture%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent Алгоритм $\Phi_0$, на котором достигается инфинум, называется оптимальным. Заранее мы никак не ограничиваем класс алгоритмов, допуская, в частности, нелинейные функции $\Phi$. Однако оказывается, что для линейных $L, L_1, \dots, L_m$ обязательно найдется л~и~н~е~й~н~ы~й оптимальный алгоритм. Это было устанволено в диссертации С. А. Смоляка (1966 г.). Сформулируем и докажем лемму С. А. Смоляка.
+\par\lemma{2.1}. \textit{Существует оптимальный линейный алгоритм, \idest найдутся коэффициенты $a_1^*, a_2^*, \dots, a_m^*$, такие, что}
+
+\begin{equation*}
+R=\sup_{f\in W}\left|L(f)-\sum_{i=1}^ma_i^*L_i(f)\right|.
+\end{equation*}
+
+\noindent\textit{При этом справедливо соотношение двойственности}
+
+\begin{equation*}
+R=\sup_{f\in W\cap N(I)}|L(f)|,
+\end{equation*}
+
+\noindent\textit{где} $N(I)=\{f\in\varkappa:If=\mathbb{0}$.
+\par\proof Расмотрим множество $D$ в пространстве $\mathbb{R}^{m+1}$ (см. рис. {\ref{img}}):
+
+\begin{equation*}
+D-\{Y=(y_0, y_1, \dots, y_m):y_0=L(f), y_i=L_i(f), i\in1:m, f\in W\}.
+\end{equation*}
+
+\noindent Очевидно, $D$ выпукло и центрально-симметрично. Положим
+
+\begin{equation*}
+y^*=\sup_{(y_0, 0, \dots, 0)\in D}y_0.
+\end{equation*}
+
+\noindent Нетрудно понять, что
+
+\begin{equation*}
+y^*=\sup_{(y_0, 0, \dots, 0)\in D}\|y_0\|=\sup_{\substack{f\in W\\ L_i(f)=0, i\in1:m}}\|L(f)\|.
+\end{equation*}
+
+\noindent Для любого алгоритма $\Phi:\mathbb{R}^m\rightarrow\mathbb{R}$ имеем:
+
+\begin{equation*}
+\begin{split}
+&\sup_{f\in W}\|L(f)-\Phi(L_1(f), \dots, l_m(f)\|\geq\\
+&\geq\sup_{(y_0, 0, \dots, 0)\in D}\max\{\|y_0-\Phi(\mathbb{0})\|, \|-y_0-\Phi(\mathbb{0})\|\}\geq\\
+&\geq\sup_{(y_0, 0, \dots, 0)\in D}\|y_0\|=y^*.
+\end{split}
+\end{equation*}
+
+\noindent Отсюда $R\geq y^*$.
+\par Отметим, что в случае $y^*=\infty$ для любого метода $\Phi$ будет
+
+\begin{equation*}
+\sup_{f\in W}\|L(f)-\Phi(L_1(f), \dots, L_m(f)\|=\infty,
+\end{equation*}
+
+\noindent значит, любой метод является оптимальным, и формально лемма справедлива.
+\par Пусть не все $L_1, \dots, L_m$ тождественно равны нулю на $W$. Тогда из $\{L_1, \dots, L_m\}$ можно выделить линейно независимую систему на $W$, скажем, $\{L_1, \dots, L_k\}$, так, что $L_{k=1}, \dots, L_m$ линейно выражаются через $L_1, \dots, L_k$.
+\par Рассмотрим множество $\Omega$ в пространстве $\mathbb{R}^{k+1}$:
+
+\begin{equation*}
+\Omega=\{Y=(y_0, \dots, y_k):y_0=L(f), y_i=L_i(f), i\in1:k, f\in W\}.
+\end{equation*}
+
+\noindent Нетрудно понять, что для ранее введенной величины $y^*$ справедливо равенство
+
+\begin{equation*}
+y^*=\sup_{(y_0, 0, \dots, 0)\in \Omega}y_0.
+\end{equation*}
+
+\noindent Точка $Y^*=(y^*, 0, \dots, 0)$ является граничной точкой $\Omega$. Проведем через нее опорную гиперплоскость (см. рис. \ref{img} для случая $k=m$, $\Omega=D$). Из геометрических соображений (по теореме отделимости) с учетом центральной симметрии $\Omega$ найдется ненулевой вектор $B=(b_0, b_1, \dots, b_k)$, такой, что 
+
+\begin{equation*}
+\|(B, Y)\|\leq(B, Y^*)\hspace{5mm} \forall Y\in \Omega,
+\end{equation*}
+
+\noindent или, в равносильной форме,
+
+\begin{equation*}
+\left\|b_0L(f)+\sum_{i=1}^k b_iL_i(f)\right\|\leq b_0y^*\hspace{5mm} \forall f\in\Omega.
+\end{equation*}
+
+\noindent В силу линейной независимости $L_1, \ldots, \L_k$ на $W$ коэффициент $b_0$ отличен от нуля. Разделим неравенство на $\|b_0\|$. Получим
+
+\begin{equation*}
+R\leq\sup_{f\in W}\left\|L(f)-\sum_{i=1}^na_i^*L_i(f)\right\|\leq y^*
+\end{equation*}
+
+\noindent $a_i^*=-b_i/b_0, i \in1:k, a_i^*=0, i \in k+1:m$. Неравество $R\geq y^*$ уже было доказано, значит, $R=y^*$, и лемма доказана.
+
+\section{Слайновые алгоритмы, их оптимальность и центральность}
+\setcounter{equation}{0}
+
+\subsection{} В этом параграфе рассматривается важный частный случай задачи \S 2 об оптимальном восстановлении линейного функционала $L(f)$ по значениям $m$ линейных функционалов $L_I(f)$ на множестве $W\subset\varkappa$. Предпологается, что множество $W$ задано в виде
+
+\begin{equation}
+W=\{g\in\varkappa:\|Tf\|^2\leq M^2\},
+\end{equation}
+
+\end{document}
